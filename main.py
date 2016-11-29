@@ -25,7 +25,12 @@ def connect():
             cur = conn.cursor()
             return cur
         except:
-            print "Failed to connect to the database"
+            try:
+                conn = psycopg2.connect(dbname="postgres", user="jphelps")
+                cur = conn.cursor()
+                return cur
+            except:
+                print "Failed to connect to the database"
 
 def printPickups(cur):
     cur.execute("""SELECT * from Boat""")
