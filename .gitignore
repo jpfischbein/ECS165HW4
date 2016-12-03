@@ -1,3 +1,6 @@
+# Data files
+/Grades/
+
 # Object files
 *.o
 *.ko
