@@ -32,7 +32,7 @@ def connect():
             except:
                 print "Failed to connect to the database"
 
-def printPickups(cur):a
+def printPickups(cur):
     cur.execute("""SELECT * from Boat""")
     rows = cur.fetchall()
     print "\nShow me the databases:\n"
