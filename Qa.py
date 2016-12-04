@@ -10,8 +10,8 @@ import os
 import time
 
 def connect():
-    user = os.environ['USER']
-    # user = "postgres"
+    # user = os.environ['USER']
+    user = "postgres"
     try:
         conn = psycopg2.connect(dbname="postgres", user=user)
         return conn

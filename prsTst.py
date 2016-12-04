@@ -12,14 +12,15 @@ from os.path import isfile, join
 import csv
 import re
 import psycopg2
+import time
 
 clist = []
 
 def insertValues(cur, conn, crsdict, mlist, slist):
     #PREPARE COURSE INSERT
     # print crsdict['cid']
-    cur.execute("""INSERT INTO Course(cid,year,quarter,subject,crse,section,unitlow,unithigh) VALUES (%(cid)s,%(year)s,%(quarter)s,%(subject)s,%(crse)s,%(section)s,%(unitlow)s,%(unithigh)s);""", crsdict)
-    # command = "INSERT INTO Course(cid,year,quarter,subject,crse,section,unitlow,unithigh) VALUES (%(cid)s,%(year)s,%(quarter)s,%(subject)s,%(crse)s,%(section)s,%(unitlow)s,%(unithigh)s); " % crsdict
+    # cur.execute("""INSERT INTO Course(cid,year,quarter,subject,crse,section,unitlow,unithigh) VALUES (%(cid)s,%(year)s,%(quarter)s,%(subject)s,%(crse)s,%(section)s,%(unitlow)s,%(unithigh)s);""", crsdict)
+    command = "INSERT INTO Course(cid,year,quarter,subject,crse,section,unitlow,unithigh) VALUES (%(cid)s,%(year)s,%(quarter)s,\'%(subject)s\',%(crse)s,%(section)s,%(unitlow)s,%(unithigh)s); " % crsdict
     
     # print command 
     # print crsdict['cid']
@@ -31,6 +32,9 @@ def insertValues(cur, conn, crsdict, mlist, slist):
             inst = 'null'
         else:
             inst = mdict['instructor'].replace(',','')
+            if(inst.find('\'') != -1):
+                # print inst
+                inst = inst.replace('\'','')
             # print inst
         #Parse type
         if(mdict['type'] == ''):
@@ -208,14 +212,20 @@ def insertValues(cur, conn, crsdict, mlist, slist):
             room = -1
         else:
             room = mdict['room']
-        cur.execute("""INSERT INTO Meeting(cid,instructor,type,mon,tues,wed,thur,fri,sat,starttime,endtime,building,room) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], inst, typ, m, t, w, r, f, s, start, end, build, room))
-        # command += "INSERT INTO Meeting(cid,instructor,type,mon,tues,wed,thur,fri,sat,starttime,endtime,building,room) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s); " % (crsdict['cid'], inst, typ, m, t, w, r, f, s, start, end, build, room)
+        # cur.execute("""INSERT INTO Meeting(cid,instructor,type,mon,tues,wed,thur,fri,sat,starttime,endtime,building,room) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], inst, typ, m, t, w, r, f, s, start, end, build, room))
+        command += "INSERT INTO Meeting(cid,instructor,type,mon,tues,wed,thur,fri,sat,starttime,endtime,building,room) VALUES (%s,\'%s\',\'%s\',%s,%s,%s,%s,%s,%s,%s,%s,\'%s\',%s); " % (crsdict['cid'], inst, typ, m, t, w, r, f, s, start, end, build, room)
 
     #PREPARE STUDENT INSERT
     for sdict in slist:
+        #Parse name
+        name = sdict['surname']
+        if(name.find('\'') != -1):
+            # print name
+            name = name.replace('\'','')
+            # print name
         #Parse grade
         grad = sdict['grade']
-        grade = 'nan'
+        grade = 'null'
         if (grad == 'A+') or (grad == 'A'):
             grade = 4.0
         elif (len(grad) == 1 or len(grad) == 2):
@@ -227,19 +237,26 @@ def insertValues(cur, conn, crsdict, mlist, slist):
                 grade = 1.0
             elif (grad == 'F'):
                 grade = 0.0
-            if (len(grad) == 2 and (grade != 'nan') and (grad[1] == '+')):
+            if (len(grad) == 2 and (grade != 'null') and (grad[1] == '+')):
                 grade += 0.3
-            if (len(grad) == 2 and (grade != 'nan') and (grad[1] == '-')):
+            if (len(grad) == 2 and (grade != 'null') and (grad[1] == '-')):
                 grade -= 0.3
         #Parse units
         if(sdict['units'] == ''):
             unts = 0
         else:
             unts = sdict['units']
-        cur.execute("""INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], unts, sdict['class'], sdict['major'], grade, sdict['status'], sdict['email']))
-        # command += "INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s); " % (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], sdict['units'], sdict['class'], sdict['major'], grad, sdict['status'], sdict['email'])
-    
+        #Parse email
+        email = sdict['email']
+        if(email.find('\'') != -1):
+            # print email
+            email = email.replace('\'','')
+            # print email
+        # cur.execute("""INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], unts, sdict['class'], sdict['major'], grade, sdict['status'], sdict['email']))
+        command += "INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,\'%s\',\'%s\',\'%s\',%s,\'%s\',\'%s\',%s,\'%s\',\'%s\'); " % (crsdict['cid'], sdict['sid'], name, sdict['prefname'], sdict['level'], unts, sdict['class'], sdict['major'], grade, sdict['status'], email)
+        
     #SEND COMMAND TO DATABASE
+    cur.execute(command)
     # cur.executemany(command, ())
     # conn.commit()
     # print "EXECUTED"
@@ -346,8 +363,8 @@ def makeTables(cur):
 
 def connect():
     # user = 'jpfischbein'
-    user = os.environ['USER']
-    # user = "postgres"
+    # user = os.environ['USER']
+    user = "postgres"
     try:
         conn = psycopg2.connect(dbname="postgres", user=user)
         return conn
@@ -358,6 +375,8 @@ def main(argv):
     if (2 != len(sys.argv)):
         print "Incorrect number of arguments"
         return 0
+
+    start_time = time.time()
 
     conn = connect()
     cur = conn.cursor()
@@ -380,6 +399,8 @@ def main(argv):
 
     # parse(cur, conn, 'Grades/1995_Q4.csv')
     # print len(clist)
+
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 if __name__ == '__main__': main(sys.argv[1:])

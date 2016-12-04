@@ -23,7 +23,7 @@ def get_average_gpa_student_attempts_n_units_for_quarter(cur, units):
                 "FROM "\
                     "(SELECT sid, SUM(s.units) as sum, AVG(grade) as GPA "\
                     "FROM Student s, Course c "\
-                    "WHERE s.cid = c.cid AND grade != 'nan'"\
+                    "WHERE s.cid = c.cid AND grade != 'nan' "\
                     "GROUP BY sid, year, quarter) U "\
                 "WHERE U.sum = %s "\
                 "GROUP BY sum;", [units])
