@@ -52,7 +52,7 @@ def main():
     cur = conn.cursor()
 
     #PRINT HEADER
-    print ("{0:<9} {1:<12} {2:<12}".format(
+    print ("{0:<9} {1:<32} {2:<12}".format(
         "Course", "Instructor", "Average GPA"))
 
     # Get the percentage of students attempting n units for quarter
@@ -61,7 +61,7 @@ def main():
     # print len(results)
 
     for i in range(len(results)):
-        print ("{0:<9} {1:<12} {2:<12.4f} ".format(
+        print ("{0:<9} {1:<32} {2:<12.2f} ".format(
             results[i][0],
             results[i][1],
             results[i][2]))

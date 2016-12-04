@@ -52,7 +52,7 @@ def main():
     results = get_average_gpa_best_worst_prof(cur)
 
     for i in range(0, len(results)):
-        print ("{0:<12} {1:<13.2f}".format(
+        print ("{0:<32} {1:<13.2f}".format(
             results[i][0],
             results[i][1]))
     print("--- %s seconds ---" % (time.time() - start_time))
