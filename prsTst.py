@@ -12,15 +12,14 @@ from os.path import isfile, join
 import csv
 import re
 import psycopg2
-import time
 
 clist = []
 
 def insertValues(cur, conn, crsdict, mlist, slist):
     #PREPARE COURSE INSERT
     # print crsdict['cid']
-    # cur.execute("""INSERT INTO Course(cid,year,quarter,subject,crse,section,unitlow,unithigh) VALUES (%(cid)s,%(year)s,%(quarter)s,%(subject)s,%(crse)s,%(section)s,%(unitlow)s,%(unithigh)s);""", crsdict)
-    command = "INSERT INTO Course(cid,year,quarter,subject,crse,section,unitlow,unithigh) VALUES (%(cid)s,%(year)s,%(quarter)s,\'%(subject)s\',%(crse)s,%(section)s,%(unitlow)s,%(unithigh)s); " % crsdict
+    cur.execute("""INSERT INTO Course(cid,year,quarter,subject,crse,section,unitlow,unithigh) VALUES (%(cid)s,%(year)s,%(quarter)s,%(subject)s,%(crse)s,%(section)s,%(unitlow)s,%(unithigh)s);""", crsdict)
+    # command = "INSERT INTO Course(cid,year,quarter,subject,crse,section,unitlow,unithigh) VALUES (%(cid)s,%(year)s,%(quarter)s,%(subject)s,%(crse)s,%(section)s,%(unitlow)s,%(unithigh)s); " % crsdict
     
     # print command 
     # print crsdict['cid']
@@ -32,9 +31,6 @@ def insertValues(cur, conn, crsdict, mlist, slist):
             inst = 'null'
         else:
             inst = mdict['instructor'].replace(',','')
-            if(inst.find('\'') != -1):
-                # print inst
-                inst = inst.replace('\'','')
             # print inst
         #Parse type
         if(mdict['type'] == ''):
@@ -212,67 +208,39 @@ def insertValues(cur, conn, crsdict, mlist, slist):
             room = -1
         else:
             room = mdict['room']
-        # cur.execute("""INSERT INTO Meeting(cid,instructor,type,mon,tues,wed,thur,fri,sat,starttime,endtime,building,room) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], inst, typ, m, t, w, r, f, s, start, end, build, room))
-        command += "INSERT INTO Meeting(cid,instructor,type,mon,tues,wed,thur,fri,sat,starttime,endtime,building,room) VALUES (%s,\'%s\',\'%s\',%s,%s,%s,%s,%s,%s,%s,%s,\'%s\',%s); " % (crsdict['cid'], inst, typ, m, t, w, r, f, s, start, end, build, room)
+        cur.execute("""INSERT INTO Meeting(cid,instructor,type,mon,tues,wed,thur,fri,sat,starttime,endtime,building,room) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], inst, typ, m, t, w, r, f, s, start, end, build, room))
+        # command += "INSERT INTO Meeting(cid,instructor,type,mon,tues,wed,thur,fri,sat,starttime,endtime,building,room) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s); " % (crsdict['cid'], inst, typ, m, t, w, r, f, s, start, end, build, room)
 
     #PREPARE STUDENT INSERT
     for sdict in slist:
-        #Parse name
-        name = sdict['surname']
-        if(name.find('\'') != -1):
-            # print name
-            name = name.replace('\'','')
-            # print name
         #Parse grade
-        grade = sdict['grade']
-        if(grade == ''):
-            grad = 'null'
-        if(grade.find('A')):
-            grad = 4
-            if(grade.find('-')):
-                grad -= .3
-        elif(grade.find('B')):
-            grad = 3
-            if(grade.find('-')):
-                grad -= .3
-            elif(grade.find('+')):
-                grade += .3
-        elif(grade.find('C')):
-            grad = 2
-            if(grade.find('-')):
-                grad -= .3
-            elif(grade.find('+')):
-                grade += .3
-        elif(grade.find('D')):
-            grad = 1
-            if(grade.find('-')):
-                grad -= .3
-            elif(grade.find('+')):
-                grade += .3
-        elif(grade.find('F')):
-            grad = 0
-            if(grade.find('+')):
-                grade += .3
-        else:
-            grad = 'null'
+        grad = sdict['grade']
+        grade = 'nan'
+        if (grad == 'A+') or (grad == 'A'):
+            grade = 4.0
+        elif (len(grad) == 1 or len(grad) == 2):
+            if (grad[0] == 'B'):
+                grade = 3.0
+            elif (grad[0] == 'C'):
+                grade = 2.0
+            elif (grad[0] == 'D'):
+                grade = 1.0
+            elif (grad == 'F'):
+                grade = 0.0
+            if (len(grad) == 2 and (grade != 'nan') and (grad[1] == '+')):
+                grade += 0.3
+            if (len(grad) == 2 and (grade != 'nan') and (grad[1] == '-')):
+                grade -= 0.3
         #Parse units
-        units = sdict['units']
-        if(units == ''):
+        if(sdict['units'] == ''):
             unts = 0
         else:
-            unts = units
-        #Parse email
-        email = sdict['email']
-        if(email.find('\'') != -1):
-            # print email
-            email = email.replace('\'','')
-            # print email
-        # cur.execute("""INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], unts, sdict['class'], sdict['major'], grad, sdict['status'], sdict['email']))
-        command += "INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,\'%s\',\'%s\',\'%s\',%s,\'%s\',\'%s\',%s,\'%s\',\'%s\'); " % (crsdict['cid'], sdict['sid'], name, sdict['prefname'], sdict['level'], unts, sdict['class'], sdict['major'], grad, sdict['status'], email)
+            unts = sdict['units']
+        cur.execute("""INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], unts, sdict['class'], sdict['major'], grade, sdict['status'], sdict['email']))
+        # command += "INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s); " % (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], sdict['units'], sdict['class'], sdict['major'], grad, sdict['status'], sdict['email'])
     
     #SEND COMMAND TO DATABASE
-    # print command
-    cur.execute(command)
+    # cur.executemany(command, ())
     # conn.commit()
     # print "EXECUTED"
     # print command
@@ -368,18 +336,18 @@ def parse(cur, conn, filepath):
 
 def makeTables(cur):
     cur.execute("BEGIN; CREATE TABLE Course(cid INT, year INT, quarter INT," \
-        " subject CHAR(4), crse INT, section INT, unitlow INT, unithigh INT);" \
+        " subject CHAR(3), crse INT, section INT, unitlow INT, unithigh INT);" \
         "CREATE TABLE Meeting(cid INT, instructor CHAR(32), type CHAR(32),"\
         " mon BOOLEAN, tues BOOLEAN, wed BOOLEAN, thur BOOLEAN, fri BOOLEAN,"\
         " sat BOOLEAN, starttime INT, endtime INT, building CHAR(16), room INT);" \
         "CREATE TABLE Student(cid INT, sid INT, surname CHAR(16),"\
         " prefname CHAR(16), level CHAR(8), units FLOAT, class CHAR(8),"\
-        " major CHAR(4), grade FLOAT, status CHAR(8), email CHAR(64)); COMMIT;")    
+        " major CHAR(4), grade DOUBLE PRECISION, status CHAR(8), email CHAR(64)); COMMIT;")    
 
 def connect():
     # user = 'jpfischbein'
     user = os.environ['USER']
-    # print user
+    # user = "postgres"
     try:
         conn = psycopg2.connect(dbname="postgres", user=user)
         return conn
@@ -390,7 +358,6 @@ def main(argv):
     if (2 != len(sys.argv)):
         print "Incorrect number of arguments"
         return 0
-    start_time = time.time()
 
     conn = connect()
     cur = conn.cursor()
@@ -408,8 +375,6 @@ def main(argv):
             pathseq = (path, csvfile)
             csvfilepath = slash.join(pathseq)
             parse(cur, conn, csvfilepath)
-
-    print("--- %s seconds ---" % (time.time() - start_time))
 
     # print len(clist)
 
