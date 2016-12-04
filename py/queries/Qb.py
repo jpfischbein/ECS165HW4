@@ -35,7 +35,7 @@ def main():
     cur = conn.cursor()
 
     # Get the Quarter Totals
-    unitsPerQuarter = range(21)
+    unitsPerQuarter = range(1, 21)
     
     #PRINT HEADER
     print ("{0:<9} {1:<9}".format("Units", "Average GPA"))
