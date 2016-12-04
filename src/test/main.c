@@ -57,65 +57,70 @@
 
 /* ========== SHARED STRINGS may be used to establish a shared context between encoder & decoder
  * ========== and allows for increased processing and smaller stream size */
-const char *SHARED_STRINGS[] = {"@context","@id","@value","@type","xsd:string","xsd:boolean","xsd:unsignedShort","xsd:unsignedByte", "xsd:float","http://w3c.github.io/wot/w3c-wot-td-context.jsonld","metadata","name","protocols","uri","priority","encodings","interactions","outputData","inputData","writable","Property","Action","Event","CoAP","HTTP","JSON","EXI", "WS"};
-const int NUMBER_OF_SHARED_STRINGS = sizeof(SHARED_STRINGS)/sizeof(SHARED_STRINGS[0]);
+const char *SHARED_STRINGS[] = { "@context", "@id", "@value", "@type",
+		"xsd:string", "xsd:boolean", "xsd:unsignedShort", "xsd:unsignedByte",
+		"xsd:float", "http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+		"metadata", "name", "protocols", "uri", "priority", "encodings",
+		"interactions", "outputData", "inputData", "writable", "Property",
+		"Action", "Event", "CoAP", "HTTP", "JSON", "EXI", "WS" };
+const int NUMBER_OF_SHARED_STRINGS = sizeof(SHARED_STRINGS)
+		/ sizeof(SHARED_STRINGS[0]);
 /* ==========  */
 
-
-static int test(const char* JSON_STRING_IN, const int useSharedStrings) {
+static int test(const char* JSON_STRING_IN) {
 	int errn = 0;
 
 	const size_t lenOut = strlen(JSON_STRING_IN) + 100; /* some extra space for decoding differences e.g, number 1 -> 1E0 etc */
 	char JSON_STRING_OUT[lenOut];
 
 	uint8_t buffer[BUFFER_SIZE];
-	size_t posEncode = 0;
+	size_t DECODE_LENGTH = 1000;
 	size_t posDecode = 0;
 
-	printf("FROM (%s): \n%s \n", useSharedStrings ? "withSharedStrings" : "withoutSharedStrings", JSON_STRING_IN);
+	printf("FROM: \n%s\n", JSON_STRING_IN);
 
-	if(useSharedStrings) {
-		errn = encodeEXIforJSONsharedStrings(JSON_STRING_IN, strlen(JSON_STRING_IN), buffer, BUFFER_SIZE, &posEncode, SHARED_STRINGS, NUMBER_OF_SHARED_STRINGS);
-	} else {
-		errn = encodeEXIforJSON(JSON_STRING_IN, strlen(JSON_STRING_IN), buffer, BUFFER_SIZE, &posEncode);
-	}
-	if( errn == 0 ) {
-		/* OK so far */
-		printf("Encoding JSON (len=%d) to EXIforJSON (len=%d) was successful \n", strlen(JSON_STRING_IN), posEncode);
+//	errn = encodeEXIforJSON(JSON_STRING_IN, strlen(JSON_STRING_IN), buffer,
+//	BUFFER_SIZE, &posEncode);
+//
+//	if (errn == 0) {
+	/* OK so far */
+//	printf("Encoding JSON (len=%d) to EXIforJSON (len=%d) was successful \n",
+//			strlen(JSON_STRING_IN), posEncode);
 
-		/* Try to transform it back to JSON again */
-		if(useSharedStrings) {
-			errn = decodeEXIforJSONsharedStrings(buffer, BUFFER_SIZE, &posDecode, JSON_STRING_OUT, lenOut, SHARED_STRINGS, NUMBER_OF_SHARED_STRINGS);
-		} else {
-			errn = decodeEXIforJSON(buffer, BUFFER_SIZE, &posDecode, JSON_STRING_OUT, lenOut);
+	/* Try to transform it back to JSON again */
+
+	errn = decodeEXIforJSON(buffer, BUFFER_SIZE, &posDecode, JSON_STRING_OUT,
+			lenOut);
+
+	if (errn == 0) {
+		/* OK */
+		printf(
+				"Decoding EXIforJSON (len=%d) to JSON (len=%d) was successful \n",
+				DECODE_LENGTH, strlen(JSON_STRING_OUT));
+		printf("TO: \n%s\n", JSON_STRING_OUT);
+
+		/* parse JSON again to check syntax */
+		const int jsmnTokens = 128;
+		jsmntok_t * t = (jsmntok_t*) malloc(jsmnTokens * sizeof(jsmntok_t));
+
+		jsmn_parser p;
+		jsmn_init(&p);
+		int cnt = jsmn_parse(&p, JSON_STRING_OUT, strlen(JSON_STRING_OUT), t,
+				jsmnTokens);
+		if (cnt < 0) {
+			/* error */
+			errn = cnt;
+			printf("\tParsing JSON failed! \n");
 		}
-
-		if( errn == 0 ) {
-			/* OK */
-			printf("Decoding EXIforJSON (len=%d) to JSON (len=%d) was successful \n", posEncode, strlen(JSON_STRING_OUT));
-			printf("TO (%s): \n%s \n", useSharedStrings ? "withSharedStrings" : "withoutSharedStrings", JSON_STRING_OUT);
-
-			/* parse JSON again to check syntax */
-			const int jsmnTokens = 128;
-			jsmntok_t * t = (jsmntok_t*) malloc(jsmnTokens * sizeof(jsmntok_t));
-
-			jsmn_parser p;
-			jsmn_init(&p);
-			int cnt  = jsmn_parse(&p, JSON_STRING_OUT, strlen(JSON_STRING_OUT), t, jsmnTokens);
-			if(cnt < 0) {
-				/* error */
-				errn = cnt;
-				printf("\tParsing JSON failed! \n");
-			}
-			/* TODO JSON compare */
-		} else {
-			/* ERROR */
-			printf("Decoding EXIforJSON to JSON failed due to error %d \n", errn);
-		}
+		/* TODO JSON compare */
 	} else {
 		/* ERROR */
-		printf("Encoding JSON to EXIforJSON failed due to error %d \n", errn);
+		printf("Decoding EXIforJSON to JSON failed due to error %d \n", errn);
 	}
+//	} else {
+//		/* ERROR */
+//		printf("Encoding JSON to EXIforJSON failed due to error %d \n", errn);
+//	}
 
 	printf("- - - \n");
 
@@ -132,58 +137,59 @@ int main(int argc, char *argv[]) {
 	/* SAMPLE0 */
 	JSON_STRING_IN = SAMPLE0;
 	errn = test(JSON_STRING_IN, 0);
-	if (errn) return errn;
-	errn = test(JSON_STRING_IN, 1);
-	if (errn) return errn;
+	if (errn)
+		return errn;
+//	errn = test(JSON_STRING_IN, 1);
+//	if (errn) return errn;
 
-	/* SAMPLE1 */
-	JSON_STRING_IN = SAMPLE1;
-	errn = test(JSON_STRING_IN, 0);
-	if (errn) return errn;
-	errn = test(JSON_STRING_IN, 1);
-	if (errn) return errn;
-
-	/* SAMPLE2 */
-	JSON_STRING_IN = SAMPLE2;
-	errn = test(JSON_STRING_IN, 0);
-	if (errn) return errn;
-	errn = test(JSON_STRING_IN, 1);
-	if (errn) return errn;
-
-	/* SAMPLE3 */
-	JSON_STRING_IN = SAMPLE3;
-	errn = test(JSON_STRING_IN, 0);
-	if (errn) return errn;
-	errn = test(JSON_STRING_IN, 1);
-	if (errn) return errn;
-
-	/* SAMPLE4 */
-	JSON_STRING_IN = SAMPLE4;
-	errn = test(JSON_STRING_IN, 0);
-	if (errn) return errn;
-	errn = test(JSON_STRING_IN, 1);
-	if (errn) return errn;
-
-	/* SAMPLE5 */
-	JSON_STRING_IN = SAMPLE5;
-	errn = test(JSON_STRING_IN, 0);
-	if (errn) return errn;
-	errn = test(JSON_STRING_IN, 1);
-	if (errn) return errn;
-
-	/* SAMPLE6 */
-	JSON_STRING_IN = SAMPLE6;
-	errn = test(JSON_STRING_IN, 0);
-	if (errn) return errn;
-	errn = test(JSON_STRING_IN, 1);
-	if (errn) return errn;
-
-	/* SAMPLE7 */
-	JSON_STRING_IN = SAMPLE7;
-	errn = test(JSON_STRING_IN, 0);
-	if (errn) return errn;
-	errn = test(JSON_STRING_IN, 1);
-	if (errn) return errn;
+//	/* SAMPLE1 */
+//	JSON_STRING_IN = SAMPLE1;
+//	errn = test(JSON_STRING_IN, 0);
+//	if (errn) return errn;
+//	errn = test(JSON_STRING_IN, 1);
+//	if (errn) return errn;
+//
+//	/* SAMPLE2 */
+//	JSON_STRING_IN = SAMPLE2;
+//	errn = test(JSON_STRING_IN, 0);
+//	if (errn) return errn;
+//	errn = test(JSON_STRING_IN, 1);
+//	if (errn) return errn;
+//
+//	/* SAMPLE3 */
+//	JSON_STRING_IN = SAMPLE3;
+//	errn = test(JSON_STRING_IN, 0);
+//	if (errn) return errn;
+//	errn = test(JSON_STRING_IN, 1);
+//	if (errn) return errn;
+//
+//	/* SAMPLE4 */
+//	JSON_STRING_IN = SAMPLE4;
+//	errn = test(JSON_STRING_IN, 0);
+//	if (errn) return errn;
+//	errn = test(JSON_STRING_IN, 1);
+//	if (errn) return errn;
+//
+//	/* SAMPLE5 */
+//	JSON_STRING_IN = SAMPLE5;
+//	errn = test(JSON_STRING_IN, 0);
+//	if (errn) return errn;
+//	errn = test(JSON_STRING_IN, 1);
+//	if (errn) return errn;
+//
+//	/* SAMPLE6 */
+//	JSON_STRING_IN = SAMPLE6;
+//	errn = test(JSON_STRING_IN, 0);
+//	if (errn) return errn;
+//	errn = test(JSON_STRING_IN, 1);
+//	if (errn) return errn;
+//
+//	/* SAMPLE7 */
+//	JSON_STRING_IN = SAMPLE7;
+//	errn = test(JSON_STRING_IN, 0);
+//	if (errn) return errn;
+//	errn = test(JSON_STRING_IN, 1);
+//	if (errn) return errn;
 
 	return errn;
 }

@@ -1,5 +1,7 @@
 # Data files
-/Grades/
+/data/Grades/
+/data/analysis/
+*.xml
 
 # Object files
 *.o
