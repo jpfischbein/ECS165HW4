@@ -214,16 +214,29 @@ def insertValues(cur, conn, crsdict, mlist, slist):
     #PREPARE STUDENT INSERT
     for sdict in slist:
         #Parse grade
-        if(sdict['grade'] == ''):
-            grad = 'null'
-        else:
-            grad = sdict['grade']
+        grad = sdict['grade']
+        grade = 'nan'
+        if (grad == 'A+') or (grad == 'A'):
+            grade = 4.0
+        elif (len(grad) == 1 or len(grad) == 2):
+            if (grad[0] == 'B'):
+                grade = 3.0
+            elif (grad[0] == 'C'):
+                grade = 2.0
+            elif (grad[0] == 'D'):
+                grade = 1.0
+            elif (grad == 'F'):
+                grade = 0.0
+            if (len(grad) == 2 and (grade != 'nan') and (grad[1] == '+')):
+                grade += 0.3
+            if (len(grad) == 2 and (grade != 'nan') and (grad[1] == '-')):
+                grade -= 0.3
         #Parse units
         if(sdict['units'] == ''):
             unts = 0
         else:
             unts = sdict['units']
-        cur.execute("""INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], unts, sdict['class'], sdict['major'], grad, sdict['status'], sdict['email']))
+        cur.execute("""INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""", (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], unts, sdict['class'], sdict['major'], grade, sdict['status'], sdict['email']))
         # command += "INSERT INTO Student(cid,sid,surname,prefname,level,units,class,major,grade,status,email) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s); " % (crsdict['cid'], sdict['sid'], sdict['surname'], sdict['prefname'], sdict['level'], sdict['units'], sdict['class'], sdict['major'], grad, sdict['status'], sdict['email'])
     
     #SEND COMMAND TO DATABASE
@@ -329,12 +342,12 @@ def makeTables(cur):
         " sat BOOLEAN, starttime INT, endtime INT, building CHAR(16), room INT);" \
         "CREATE TABLE Student(cid INT, sid INT, surname CHAR(16),"\
         " prefname CHAR(16), level CHAR(8), units FLOAT, class CHAR(8),"\
-        " major CHAR(4), grade CHAR(8), status CHAR(8), email CHAR(64)); COMMIT;")    
+        " major CHAR(4), grade DOUBLE PRECISION, status CHAR(8), email CHAR(64)); COMMIT;")    
 
 def connect():
     # user = 'jpfischbein'
     user = os.environ['USER']
-    # print user
+    # user = "postgres"
     try:
         conn = psycopg2.connect(dbname="postgres", user=user)
         return conn
