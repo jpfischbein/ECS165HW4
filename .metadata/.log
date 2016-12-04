@@ -1,0 +1,110 @@
+
+!ENTRY org.eclipse.core.resources 4 77 2016-11-29 23:08:55.199
+!MESSAGE Invalid project description.
+!SUBENTRY 1 unknown 0 0 2016-11-29 23:08:55.199
+!MESSAGE OK
+!SUBENTRY 1 org.eclipse.core.resources 4 77 2016-11-29 23:08:55.199
+!MESSAGE /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU overlaps the workspace location: /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU
+
+!ENTRY org.eclipse.egit.ui 4 0 2016-11-29 23:08:55.271
+!MESSAGE Failed to refresh projects from index changes
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Errors occurred while refreshing resources with the local file system.
+	at org.eclipse.core.internal.localstore.FileSystemResourceManager.refreshResource(FileSystemResourceManager.java:977)
+	at org.eclipse.core.internal.localstore.FileSystemResourceManager.refresh(FileSystemResourceManager.java:960)
+	at org.eclipse.core.internal.resources.Resource.refreshLocal(Resource.java:1594)
+	at org.eclipse.egit.ui.Activator$ResourceRefreshJob$1.run(Activator.java:521)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.egit.ui.Activator$ResourceRefreshJob.run(Activator.java:506)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+Contains: The project description file (.project) for 'RemoteSystemsTempFiles' is missing.  This file contains important information about the project.  The project will not function properly until this file is restored.
+!SUBENTRY 1 org.eclipse.core.resources 4 271 2016-11-29 23:08:55.272
+!MESSAGE Errors occurred while refreshing resources with the local file system.
+!SUBENTRY 2 org.eclipse.core.resources 4 567 2016-11-29 23:08:55.272
+!MESSAGE The project description file (.project) for 'RemoteSystemsTempFiles' is missing.  This file contains important information about the project.  The project will not function properly until this file is restored.
+
+!ENTRY org.eclipse.core.resources 4 77 2016-11-29 23:09:34.695
+!MESSAGE Invalid project description.
+!SUBENTRY 1 unknown 0 0 2016-11-29 23:09:34.695
+!MESSAGE OK
+!SUBENTRY 1 org.eclipse.core.resources 4 77 2016-11-29 23:09:34.695
+!MESSAGE /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU overlaps the workspace location: /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU
+
+!ENTRY org.eclipse.core.resources 4 77 2016-11-29 23:10:52.959
+!MESSAGE Invalid project description.
+!SUBENTRY 1 unknown 0 0 2016-11-29 23:10:52.960
+!MESSAGE OK
+!SUBENTRY 1 org.eclipse.core.resources 4 77 2016-11-29 23:10:52.960
+!MESSAGE /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU overlaps the workspace location: /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU
+
+!ENTRY org.eclipse.core.resources 4 77 2016-11-29 23:11:00.468
+!MESSAGE Invalid project description.
+!SUBENTRY 1 unknown 0 0 2016-11-29 23:11:00.468
+!MESSAGE OK
+!SUBENTRY 1 org.eclipse.core.resources 4 77 2016-11-29 23:11:00.468
+!MESSAGE /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU overlaps the workspace location: /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU
+
+!ENTRY org.eclipse.core.resources 4 77 2016-11-29 23:11:31.505
+!MESSAGE Invalid project description.
+!SUBENTRY 1 unknown 0 0 2016-11-29 23:11:31.505
+!MESSAGE OK
+!SUBENTRY 1 org.eclipse.core.resources 4 77 2016-11-29 23:11:31.505
+!MESSAGE /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU/src overlaps the location of another project: 'src'
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-29 23:11:45.468
+!MESSAGE Problems saving workspace
+
+!ENTRY org.eclipse.ui.ide 4 1 2016-11-29 23:11:45.468
+!MESSAGE Problems occurred while trying to save the state of the workbench.
+!SUBENTRY 1 org.eclipse.core.resources 4 568 2016-11-29 23:11:45.468
+!MESSAGE Could not write workspace metadata '/Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU/.metadata/.plugins/org.eclipse.core.resources/.root/1.tree'.
+!STACK 0
+java.io.FileNotFoundException: /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU/.metadata/.plugins/org.eclipse.core.resources/.root/1.tree (No such file or directory)
+	at java.io.FileOutputStream.open0(Native Method)
+	at java.io.FileOutputStream.open(FileOutputStream.java:270)
+	at java.io.FileOutputStream.<init>(FileOutputStream.java:213)
+	at java.io.FileOutputStream.<init>(FileOutputStream.java:162)
+	at org.eclipse.core.internal.localstore.SafeFileOutputStream.<init>(SafeFileOutputStream.java:51)
+	at org.eclipse.core.internal.resources.SaveManager.saveTree(SaveManager.java:1408)
+	at org.eclipse.core.internal.resources.SaveManager.save(SaveManager.java:1190)
+	at org.eclipse.core.internal.resources.Workspace.save(Workspace.java:2283)
+	at org.eclipse.ui.internal.ide.application.IDEWorkbenchAdvisor$4.run(IDEWorkbenchAdvisor.java:456)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.core.resources 2 10035 2016-11-29 23:11:45.643
+!MESSAGE The workspace will exit with unsaved changes in this session.
+!SESSION 2016-11-29 23:11:47.582 -----------------------------------------------
+eclipse.buildId=4.6.2.M20161116-1100
+java.version=1.8.0_102
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.cpp.product -keyring /Users/Rochenko/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.cpp.product -keyring /Users/Rochenko/.eclipse_keyring
+
+!ENTRY org.eclipse.core.resources 4 77 2016-11-29 23:12:24.347
+!MESSAGE Invalid project description.
+!SUBENTRY 1 unknown 0 0 2016-11-29 23:12:24.347
+!MESSAGE OK
+!SUBENTRY 1 org.eclipse.core.resources 4 77 2016-11-29 23:12:24.348
+!MESSAGE /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU overlaps the workspace location: /Users/Rochenko/Documents/Computer_Science_Learning/ECS165a/fakeU
+
+!ENTRY org.eclipse.epp.logging.aeri.ide 2 10 2016-11-29 23:12:58.547
+!MESSAGE Updating the index from remote ‘https://www.eclipse.org/downloads/download.php?r=1&file=/technology/epp/logging/problems.zip’ failed with exception: org.apache.http.ConnectionClosedException: Premature end of Content-Length delimited message body (expected: 11660162; received: 11586659 ; version: 2.0.3.v20161116-1156
+!STACK 0
+org.eclipse.epp.logging.aeri.core.util.Logs$LogTraceException
+	at org.eclipse.epp.logging.aeri.core.util.Logs$LogTraceException.newTrace(Logs.java:387)
+	at org.eclipse.epp.logging.aeri.core.util.Logs.log(Logs.java:134)
+	at org.eclipse.epp.internal.logging.aeri.ide.server.mars.ServerProblemsHistory$UpdateIndexJob.run(ServerProblemsHistory.java:322)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-29 23:14:59.343
+!MESSAGE Problems saving workspace
+
+!ENTRY org.eclipse.ui.ide 2 1 2016-11-29 23:14:59.343
+!MESSAGE Problems occurred while trying to save the state of the workbench.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2016-11-29 23:14:59.343
+!MESSAGE The project description file (.project) for 'RemoteSystemsTempFiles' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.
+
+!ENTRY org.eclipse.core.resources 2 10035 2016-11-29 23:14:59.558
+!MESSAGE The workspace will exit with unsaved changes in this session.
