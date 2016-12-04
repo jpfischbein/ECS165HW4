@@ -53,20 +53,15 @@ def main():
     persum = 0;
 
     for units in range(1, 21):
-        if(units == 0):
-            continue
 
         # Get the percentage of students attempting n units for quarter
         s_count = get_count_student_attempts_n_units_for_quarter(cur, units)
         percent = (s_count/tot)*100
         persum += percent
 
-        print ("{0:<9.0f} {1:<9.2f}".format(
-            units,
-            percent))
+        print ("{0:<9.0f} {1:<9.2f}".format(units, percent))
 
-    print ("{0:<9} {1:<9.4f}".format(
-            "Sum:", persum))
+    print ("{0:<9} {1:<9.4f}".format("Sum:", persum))
     print("--- %s seconds ---" % (time.time() - start_time))
 
 if __name__ == '__main__': main()

@@ -45,16 +45,14 @@ def main():
     cur = conn.cursor()
 
     #PRINT HEADER
-    print ("{0:<32} {1:<13}".format(
-        "Instructor", "Average GPA"))
+    print ("{0:<32} {1:<13}".format("Instructor", "Average GPA"))
 
     # Get the percentage of students attempting n units for quarter
     results = get_average_gpa_best_worst_prof(cur)
 
     for i in range(0, len(results)):
-        print ("{0:<32} {1:<13.2f}".format(
-            results[i][0],
-            results[i][1]))
+        print ("{0:<32} {1:<13.2f}".format(results[i][0], results[i][1]))
+
     print("--- %s seconds ---" % (time.time() - start_time))
 
 if __name__ == '__main__': main()
