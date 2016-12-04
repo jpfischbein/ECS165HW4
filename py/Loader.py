@@ -362,8 +362,9 @@ def makeTables(cur):
         " major CHAR(4), grade DOUBLE PRECISION, status CHAR(8), email CHAR(64)); COMMIT;")    
 
 def connect():
-    # user = os.environ['USER']
-    user = "postgres"
+    # user = 'jpfischbein'
+    user = os.environ['USER']
+    # user = "postgres"
     try:
         conn = psycopg2.connect(dbname="postgres", user=user)
         return conn
